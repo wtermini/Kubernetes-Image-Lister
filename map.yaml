@@ -16,4 +16,4 @@ map:
     internal: quay.internal.com 
 exclude:
   - IMAGE_URL
-  - $(tekton-registry)
+  - \$\(tekton-registry\)

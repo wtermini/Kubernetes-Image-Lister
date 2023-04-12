@@ -2,22 +2,16 @@ import os
 import re
 import yaml
 import argparse
-import yaml
 import tldextract
 
-
-
-import yaml
 
 def find_images_in_manifest(file_path, registry_map, exclude_patterns, dry_run=False, replace=False):
     with open(file_path, 'r') as f:
         try:
             contents = yaml.load_all(f, Loader=yaml.FullLoader)
             all_images = []
-            yaml_contents = []
             for content in contents:
                 if not content or 'kind' not in content:
-                    yaml_contents.append(content)
                     continue
 
                 if content['kind'] in ['Deployment', 'StatefulSet', 'DaemonSet', 'Job', 'CronJob']:
@@ -38,26 +32,25 @@ def find_images_in_manifest(file_path, registry_map, exclude_patterns, dry_run=F
 
                                     if dry_run or replace:
                                         new_image = replace_image_registry(original_image, registry_map)
-
-                                        if dry_run:
-                                            print(f"Original Image: {original_image}")
-                                            print(f"New Image: {new_image}\n")
-                                        else:
-                                            container['image'] = new_image
-                                            all_images.append(new_image)
+                                        print(f"Original Image: {original_image}")
+                                        print(f"New Image: {new_image}\n")
+                                        container['image'] = new_image
+                                        all_images.append(new_image)
+                                        if not dry_run:
+                                            # Replace the original image string with the new image string in the file
+                                            with open(file_path, 'r') as f:
+                                                file_content = f.read()
+                                            file_content = file_content.replace(original_image, new_image)
+                                            with open(file_path, 'w') as f:
+                                                f.write(file_content)
                                     else:
                                         all_images.append(original_image)
-
-                yaml_contents.append(content)
-
-            if replace:
-                with open(file_path, 'w') as f:
-                    yaml.dump_all(yaml_contents, f)
 
             return all_images
 
         except yaml.YAMLError as e:
-            print(f"Error parsing {file_path}: {e}")
+            pass
+            #print(f"Error parsing {file_path}: {e}")
         return []
 
 
