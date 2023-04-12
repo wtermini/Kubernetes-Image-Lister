@@ -1,0 +1,19 @@
+---
+map:
+  gcrio:
+    external: gcr.io
+    internal: gcrio.internal.com
+  docker_hub:
+    internal: hub.internal.com
+  docker.io:
+    external: docker.io
+    internal: dockerio.internal.com
+  k8s.gcr.io:
+    external: k8s.gcr.io
+    internal: k8sgcrio.internal.com
+  quay:
+    external: quay.io
+    internal: quay.internal.com 
+exclude:
+  - IMAGE_URL
+  - $(tekton-registry)
